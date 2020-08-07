@@ -1,0 +1,11 @@
+"First Model 07082020030720":
+  hive_table_qualified_names:                # this is a predefined key to link to training data
+    - "default.historical_customer_interactions@cm"               # the qualifiedName of the hive_table object representing                
+  metadata:                                  # this is a predefined key for additional metadata
+    deployment: "this model was deployed manually"   # suggested use case: query used to extract training data
+
+"New Model 07082020030720":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically"
