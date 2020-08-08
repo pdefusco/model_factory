@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import make_scorer, accuracy_score
+
+import pickle
+from joblib import dump, load
+import datetime
+import cdsw
+
+spark = SparkSession\
+    .builder\
+    .appName("PythonSQL")\
+    .config("spark.hadoop.fs.s3a.s3guard.ddb.region","us-east-1")\
+    .config("spark.yarn.access.hadoopFileSystems","s3a://demo-aws-1/")\
+    .config("spark.hadoop.yarn.resourcemanager.principal",os.getenv("HADOOP_USER_NAME"))\
+    .config("spark.executor.instances", 2)\
+    .config("spark.executor.cores", 2)\
+    .getOrCreate()
+    
+
+#To do: take in new data rather than old table
+df = spark.sql("select * from default.historical_customer_interactions")
+
+df = df.toPandas()
+
+df = pd.get_dummies(df, columns=["channel", "offer"], drop_first=True)
+df = df.drop(columns=['zip_code'])
+
+y = df['conversion']
+X = df.drop(columns=['conversion'])
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+# Using experiment instance set in CICD.py
+data_dir = data
+clf = LogisticRegression()
+grid = {'C': [0.1, 1]}
+
+# Simplified Gridsearch... To do: unroll more gs metrics and track them
+gs = GridSearchCV(clf, grid)
+gs.fit(X_train, y_train)
+
+results = gs.cv_results_
+
+run_time_suffix = datetime.datetime.now()
+run_time_suffix = run_time_suffix.strftime("%d%m%Y%H%M%S")
+
+dump(clf, "models/clf_"+run_time_suffix+".joblib") 
+
+#cdsw.track_metric("ROC_AUC", )
