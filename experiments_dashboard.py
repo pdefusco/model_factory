@@ -11,15 +11,11 @@ from pandas.io.json import dumps as jsonify
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-
-
 app = dash.Dash(__name__)
 
 df = pd.read_csv('experiments_summary/experiments_summary.csv')
 
-
 PAGE_SIZE = 5
-
 
 app.layout = dash_table.DataTable(
     id='table-filtering',
@@ -95,10 +91,9 @@ def update_table(page_current,page_size, filter):
     ].to_dict('records')
 
 
-#PORT = os.getenv('CDSW_APP_PORT', '8090')
 # A handy way to get the link if you are running in a session.
 HTML("<a href='https://{}.{}'>Open Table View</a>".format(os.environ['CDSW_ENGINE_ID'],os.environ['CDSW_DOMAIN']))
 
 # Launches flask. Note the host and port details. This is specific to CML/CDSW
 if __name__ == '__main__':
-    app.run_server(host='127.0.0.1', port=int(os.environ['CDSW_READONLY_PORT']))
+    app.run_server(host='127.0.0.1', port=int(os.environ['CDSW_READONLY_PORT'])) #never use the debug=True param!

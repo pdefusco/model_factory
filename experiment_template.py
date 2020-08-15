@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import make_scorer, accuracy_score
 
@@ -45,21 +45,45 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 data_dir = "{}"
 clf = {}
 grid = {}
+cv = int({})
 
 # Simplified Gridsearch... To do: unroll more gs metrics and track them
-gs = GridSearchCV(clf, grid, scoring='accuracy')
+gs = GridSearchCV(clf, grid, cv=cv, scoring='accuracy', n_jobs=-1)
 gs.fit(X_train, y_train)
-
-results = gs.best_score_
-
-#Todo - do this more rigourously following best practices. Pull more metrics out. 
-#Todo - could pass more scoring criteria from calling script, dynamically, even creating custom scoring functions
-print("Best Accuracy Score")
-print(results)
 
 run_time_suffix = datetime.datetime.now()
 run_time_suffix = run_time_suffix.strftime("%d%m%Y%H%M%S")
 
-dump(clf, "models/clf_"+run_time_suffix+".joblib") 
+results = dict()
+results['timestamp'] = run_time_suffix
+results['clf'] = clf.__class__.__name__
+results['best_score'] = gs.best_score_
+results['best_params'] = [gs.best_params_]
+results['n_splits'] = gs.n_splits_
+results['scorer'] = gs.scorer_
+results['cv_results'] = [gs.cv_results_]
+results['grid'] = [grid]
 
-cdsw.track_metric("Best Accuracy", results)
+results_df = pd.DataFrame(results, index=[0])
+
+results_df['timestamp'] = results_df['timestamp'].astype(str)
+results_df['clf'] = results_df['clf'].astype(str)
+results_df['best_score'] = results_df['best_score'].astype(int)
+results_df['best_params'] = results_df['best_params'].astype(str)
+results_df['n_splits'] = results_df['n_splits'].astype(int)
+results_df['scorer'] = results_df['scorer'].astype(str)
+results_df['cv_results'] = results_df['cv_results'].astype(str)
+results_df['grid'] = results_df['grid'].astype(str)
+
+print("Best Accuracy Score")
+print(results)
+cdsw.track_metric("Best Accuracy Score", gs.best_score_)
+
+spark.sql("CREATE TABLE IF NOT EXISTS default.experiment_outcomes (TIMESTAMP STRING, CLASSIFIER STRING, \
+            BEST_SCORE INTEGER, BEST_PARAMS STRING, N_SPLITS INT, SCORER STRING, CV_RESULTS STRING, GRID STRING)")
+
+experiments_df = spark.createDataFrame(results_df)
+  
+experiments_df.write.insertInto("default.experiment_outcomes",overwrite = False) 
+    
+

@@ -1,26 +1,37 @@
 import pandas as pd
+import datetime
 
-pd.read_csv('data/new_interactions_2020-08-06 23:10:48.086433.csv')
+import pandas as pd
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-type(pd.json_normalize({"recency":"2", "history":"3", "used_discount":"0", "used_bogo":"1", "is_referral":"1", "channel":"1", "offer":"0"}))
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import make_scorer, accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV
+import pickle
+from joblib import dump, load
+import datetime
+import cdsw
+
+from cmlbootstrap import CMLBootstrap
+import datetime
+import os, time
+from Experiment import Experiment
+
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+
+df = pd.read_csv('experiments_summary/experiments_summary.csv') 
 
 
-from collections import ChainMap
 
-data = pd.DataFrame({"recency":"2", "history":"3", "used_discount":"0", "used_bogo":"1", "is_referral":"1", "channel_Phone":"1", "channel_Web":"1", "offer_Discount":"0", "offer_No Offer":"1"}
-
-, index=[0])
-
-clf = load('models/clf.joblib') 
-
-
-
-type(int(clf.predict(data)[0]))
-
-clf.predict_proba(data)[0][0]
-
-data.astype(float).dtypes
-
-type(data.to_json())
-
-pd.DataFrame(data)
+#spark.stop()
