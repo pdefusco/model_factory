@@ -11,9 +11,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import make_scorer, accuracy_score
+from joblib import dump, load
 
 import pickle
-from joblib import dump, load
 import datetime
 import cdsw
 
@@ -27,7 +27,6 @@ spark = SparkSession\
     .config("spark.executor.cores", 2)\
     .getOrCreate()
     
-
 #To do: take in new data rather than old table
 df = spark.sql("select * from default.historical_customer_interactions")
 
@@ -58,32 +57,33 @@ results = dict()
 results['timestamp'] = run_time_suffix
 results['clf'] = clf.__class__.__name__
 results['best_score'] = gs.best_score_
-results['best_params'] = [gs.best_params_]
+#results['best_params'] = [gs.best_params_]
 results['n_splits'] = gs.n_splits_
 results['scorer'] = gs.scorer_
-results['cv_results'] = [gs.cv_results_]
-results['grid'] = [grid]
+#results['cv_results'] = [gs.cv_results_]
+#results['grid'] = [grid]
 
 results_df = pd.DataFrame(results, index=[0])
 
 results_df['timestamp'] = results_df['timestamp'].astype(str)
 results_df['clf'] = results_df['clf'].astype(str)
-results_df['best_score'] = results_df['best_score'].astype(int)
-results_df['best_params'] = results_df['best_params'].astype(str)
+results_df['best_score'] = results_df['best_score'].astype(float)
+#results_df['best_params'] = results_df['best_params'].astype(str)
 results_df['n_splits'] = results_df['n_splits'].astype(int)
 results_df['scorer'] = results_df['scorer'].astype(str)
-results_df['cv_results'] = results_df['cv_results'].astype(str)
-results_df['grid'] = results_df['grid'].astype(str)
+#results_df['cv_results'] = results_df['cv_results'].astype(str)
+#results_df['grid'] = results_df['grid'].astype(str)
 
 print("Best Accuracy Score")
 print(results)
 cdsw.track_metric("Best Accuracy Score", gs.best_score_)
 
 spark.sql("CREATE TABLE IF NOT EXISTS default.experiment_outcomes (TIMESTAMP STRING, CLASSIFIER STRING, \
-            BEST_SCORE INTEGER, BEST_PARAMS STRING, N_SPLITS INT, SCORER STRING, CV_RESULTS STRING, GRID STRING)")
+            BEST_SCORE FLOAT, N_SPLITS INT, SCORER STRING)")
+
+#spark.sql("CREATE TABLE IF NOT EXISTS default.experiment_outcomes (TIMESTAMP STRING, CLASSIFIER STRING, \
+#            BEST_SCORE INTEGER, BEST_PARAMS STRING, N_SPLITS INT, SCORER STRING, CV_RESULTS STRING, GRID STRING)")
 
 experiments_df = spark.createDataFrame(results_df)
   
-experiments_df.write.insertInto("default.experiment_outcomes",overwrite = False) 
-    
-
+experiments_df.write.insertInto("default.experiment_outcomes", overwrite = False) 
