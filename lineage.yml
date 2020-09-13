@@ -1,10 +1,51 @@
-"First Model 07082020185502":
+"First Model 13092020010319":
   hive_table_qualified_names:                # this is a predefined key to link to training data
     - "default.historical_customer_interactions@cm"               # the qualifiedName of the hive_table object representing                
   metadata:                                  # this is a predefined key for additional metadata
     deployment: "this model was deployed manually"   # suggested use case: query used to extract training data
 
-"New Model 07082020185502":
+"New Model 13092020010319":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically"
+"Challenger 13092020011256":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020012430":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020012543":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020013008":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020014139":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020014837":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020021638":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020022147":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020022232":
+  hive_table_qualified_names:
+    - "default.historical_customer_interactions@cm"
+  metadata:
+    deployment: "this model was deployed programmatically""Challenger 13092020022350":
   hive_table_qualified_names:
     - "default.historical_customer_interactions@cm"
   metadata:
